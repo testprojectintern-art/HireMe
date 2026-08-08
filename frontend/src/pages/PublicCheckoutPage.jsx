@@ -103,7 +103,7 @@ export default function PublicCheckoutPage() {
                 const hostname = window.location.hostname;
                 apiBase = (hostname === 'localhost' || hostname === '127.0.0.1') 
                     ? 'http://localhost:5005/api' 
-                    : 'https://rush-jewels.onrender.com/api';
+                    : 'https://hireme-dp4x.onrender.com/api';
             }
 
             // Build items format

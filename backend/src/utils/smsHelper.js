@@ -44,10 +44,10 @@ export const sendSalesSms = async (order, invoice) => {
         const itemsSummary = order.items.map(item => `${item.productName} (x${item.orderedQuantity})`).join(', ');
         const invoiceNum = invoice?.invoiceNumber || order.orderNumber;
         const total = order.grandTotal;
-        const invoiceLink = invoice?._id ? ` View invoice: https://rush-jewels.onrender.com/public/invoice/${invoice._id}` : '';
+        const invoiceLink = invoice?._id ? ` View invoice: https://hireme-dp4x.onrender.com/public/invoice/${invoice._id}` : '';
 
         // Custom SMS message text
-        const message = `Dear ${order.customerSnapshot.name}, thank you for buying from Rush Jewels! Bill No: ${invoiceNum}, Items: ${itemsSummary}. Total: LKR ${total.toFixed(2)}. Status: ${invoice?.paymentStatus || 'paid'}.${invoiceLink}`;
+        const message = `Dear ${order.customerSnapshot.name}, thank you for choosing HireMe! Bill No: ${invoiceNum}, Items: ${itemsSummary}. Total: LKR ${total.toFixed(2)}. Status: ${invoice?.paymentStatus || 'paid'}.${invoiceLink}`;
 
         console.log(`\n========================================`);
         console.log(`[SMS OUTBOX] Triggered send to: ${phone}`);

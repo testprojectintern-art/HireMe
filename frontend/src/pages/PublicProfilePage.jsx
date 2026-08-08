@@ -67,7 +67,7 @@ export default function PublicProfilePage() {
                 const hostname = window.location.hostname;
                 apiBase = (hostname === 'localhost' || hostname === '127.0.0.1') 
                     ? 'http://localhost:5005/api' 
-                    : 'https://rush-jewels.onrender.com/api';
+                    : 'https://hireme-dp4x.onrender.com/api';
             }
             const res = await axios.get(`${apiBase}/public/orders/history?phone=${num.trim()}`);
             if (res.data?.success) {

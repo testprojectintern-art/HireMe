@@ -40,7 +40,7 @@ export default function PublicWarrantyCheckPage() {
                 if (hostname === 'localhost' || hostname === '127.0.0.1') {
                     apiBase = 'http://localhost:5005/api';
                 } else {
-                    apiBase = 'https://rush-jewels.onrender.com/api';
+                    apiBase = 'https://hireme-dp4x.onrender.com/api';
                 }
             }
 

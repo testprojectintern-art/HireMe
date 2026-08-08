@@ -8,7 +8,7 @@ const getSocketURL = () => {
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
         return 'http://localhost:5005';
     }
-    return 'https://rush-jewels.onrender.com';
+    return 'https://hireme-dp4x.onrender.com';
 };
 
 export const getSocket = () => socketInstance;

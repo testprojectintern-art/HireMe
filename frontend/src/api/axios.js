@@ -12,7 +12,7 @@ const getBaseURL = () => {
             return 'http://localhost:5005/api';
         }
     }
-    return 'https://rush-jewels.onrender.com/api';
+    return 'https://hireme-dp4x.onrender.com/api';
 };
 
 const api = axios.create({
