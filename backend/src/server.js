@@ -109,9 +109,8 @@ const corsOptions = {
     optionsSuccessStatus: 200,
 };
 
-// Apply CORS before helmet & limiters
+// Apply CORS before helmet & limiters (automatically handles preflight OPTIONS for all routes)
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
 
 // Security & parsing middleware (configured to avoid blocking cross-origin API calls)
 app.use(helmet({
