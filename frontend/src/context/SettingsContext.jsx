@@ -15,7 +15,13 @@ export function SettingsProvider({ children }) {
 
     const fetchSettings = useCallback(async () => {
         try {
-            const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5005/api';
+            let apiBase = import.meta.env.VITE_API_URL;
+            if (!apiBase) {
+                const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
+                apiBase = (hostname === 'localhost' || hostname === '127.0.0.1')
+                    ? 'http://localhost:5005/api'
+                    : 'https://hireme-dp4x.onrender.com/api';
+            }
             const res = await axios.get(`${apiBase}/public/settings`);
             if (res.data?.success && res.data.data) {
                 setSettings((prev) => ({

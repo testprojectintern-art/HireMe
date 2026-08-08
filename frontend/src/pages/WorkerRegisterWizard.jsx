@@ -100,7 +100,13 @@ export default function WorkerRegisterWizard() {
 
         setIsSubmitting(true);
         try {
-            const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5005/api';
+            let apiBase = import.meta.env.VITE_API_URL;
+            if (!apiBase) {
+                const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
+                apiBase = (hostname === 'localhost' || hostname === '127.0.0.1')
+                    ? 'http://localhost:5005/api'
+                    : 'https://hireme-dp4x.onrender.com/api';
+            }
             const certificates = formData.certificateUrl
                 ? [{ title: 'Vocational Certificate', url: formData.certificateUrl }]
                 : [];

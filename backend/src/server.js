@@ -66,7 +66,6 @@ import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 // Load environment variables
 dotenv.config();
 
-
 connectDB().then(() => {
     seedDefaults();
     initSmsScheduler();
@@ -75,11 +74,11 @@ connectDB().then(() => {
 const app = express();
 const server = http.createServer(app);
 
-// Socket.io setup
+// Socket.io setup with full CORS support
 const io = new SocketIO(server, {
     cors: {
-        origin: process.env.FRONTEND_URL?.split(',') || '*',
-        methods: ['GET', 'POST'],
+        origin: '*',
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
         credentials: true,
     },
 });
@@ -88,12 +87,38 @@ initSocketManager(io);
 // Inject io into every request so controllers can emit events
 app.use((req, _res, next) => { req.io = io; next(); });
 
-// Security & parsing middleware
-app.use(helmet());
-app.use(cors({
-    origin: true, // Allow all origins in dev, or use the logic below
+// Robust CORS Options
+const corsOptions = {
+    origin: (origin, callback) => {
+        // Allow requests with no origin (mobile apps, curl, server-to-server)
+        if (!origin) return callback(null, true);
+        return callback(null, true); // Reflect origin back for proper CORS
+    },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: [
+        'Content-Type',
+        'Authorization',
+        'x-portal-context',
+        'X-Requested-With',
+        'Accept',
+        'Origin',
+        'Access-Control-Allow-Origin',
+        'Access-Control-Allow-Headers',
+    ],
+    optionsSuccessStatus: 200,
+};
+
+// Apply CORS before helmet & limiters
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+
+// Security & parsing middleware (configured to avoid blocking cross-origin API calls)
+app.use(helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+    crossOriginOpenerPolicy: false,
 }));
+app.use(compression());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
@@ -102,13 +127,14 @@ if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
 }
 
-// Rate limiting for auth routes (prevents brute force)
+// Rate limiting for auth routes (skips OPTIONS preflight)
 const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 100, // 100 login attempts per 15 min
     message: 'Too many login attempts, please try again later',
     standardHeaders: true,
     legacyHeaders: false,
+    skip: (req) => req.method === 'OPTIONS',
 });
 
 // API Routes
@@ -162,7 +188,6 @@ app.use('/api/admin/workers',   workerAdminRoutes);
 app.use('/api/admin/jobs',      jobAdminRoutes);
 app.use('/api/admin/disputes',  disputeAdminRoutes);
 
-
 // Health check endpoint
 app.get('/api/health', async (req, res) => {
     const mongoose = (await import('mongoose')).default;
@@ -171,7 +196,7 @@ app.get('/api/health', async (req, res) => {
         success: true,
         message: 'Server is running',
         timestamp: new Date().toISOString(),
-        roles: User.schema.path('role').enumValues,
+        roles: User.schema.path('role')?.enumValues || [],
     });
 });
 
