@@ -26,6 +26,7 @@ export default function SettingsPage() {
     useEffect(() => {
         if (settingsRes?.data) {
             const s = settingsRes.data;
+            const savedLogo = s.logo || localStorage.getItem('hireme_company_logo') || '';
             setFormData({
                 companyName: s.companyName || '',
                 address: s.address || '',
@@ -34,7 +35,7 @@ export default function SettingsPage() {
                 website: s.website || '',
                 taxRegistrationNumber: s.taxRegistrationNumber || '',
                 receiptFooterMessage: s.receiptFooterMessage || '',
-                logo: s.logo || '',
+                logo: savedLogo,
             });
         }
     }, [settingsRes]);
@@ -47,12 +48,12 @@ export default function SettingsPage() {
         const file = e.target.files[0];
         if (!file) return;
 
-        if (file.size > 2 * 1024 * 1024) { // 2MB raw file limit
-            toast.error('Image too large. Please use an image under 2MB.');
+        if (file.size > 3 * 1024 * 1024) { // 3MB raw file limit
+            toast.error('Image too large. Please select an image under 3MB.');
             return;
         }
 
-        // Compress & resize image to max 300x300px before storing as base64
+        // Compress & resize image to max 300x300px (universal PNG/JPEG)
         const img = new Image();
         const objectUrl = URL.createObjectURL(file);
         img.onload = () => {
@@ -63,16 +64,12 @@ export default function SettingsPage() {
             canvas.height = Math.round(img.height * scale);
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            const compressed = canvas.toDataURL('image/webp', 0.85);
+            // Universal JPEG format for 100% device compatibility
+            const compressed = canvas.toDataURL('image/jpeg', 0.85);
             URL.revokeObjectURL(objectUrl);
-            // Estimate compressed size (~75% of base64 length)
             const estimatedKB = Math.round((compressed.length * 0.75) / 1024);
-            if (estimatedKB > 500) {
-                toast.error(`Compressed image is ${estimatedKB}KB — please use a smaller image.`);
-                return;
-            }
             setFormData(prev => ({ ...prev, logo: compressed }));
-            toast.success(`Logo ready (${estimatedKB}KB compressed). Click Save to apply.`);
+            toast.success(`Logo selected (${estimatedKB}KB). Click "Save Settings" to save.`);
         };
         img.onerror = () => {
             URL.revokeObjectURL(objectUrl);
@@ -82,7 +79,10 @@ export default function SettingsPage() {
     };
 
     const handleRemoveLogo = () => {
+        localStorage.removeItem('hireme_company_logo');
         setFormData(prev => ({ ...prev, logo: '' }));
+        updateSettingsInContext?.({ logo: '' });
+        toast.success('Logo removed.');
     };
 
     const { updateSettingsInContext, refreshSettings } = useSettings() || {};

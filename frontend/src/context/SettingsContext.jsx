@@ -4,12 +4,16 @@ import axios from 'axios';
 const SettingsContext = createContext(null);
 
 export function SettingsProvider({ children }) {
-    const [settings, setSettings] = useState({
-        companyName: 'HireMe',
-        logo: null,
-        address: '',
-        phone: '',
-        email: '',
+    const [settings, setSettings] = useState(() => {
+        const cachedLogo = typeof window !== 'undefined' ? localStorage.getItem('hireme_company_logo') : null;
+        const cachedName = typeof window !== 'undefined' ? localStorage.getItem('hireme_company_name') : null;
+        return {
+            companyName: cachedName || 'HireMe',
+            logo: cachedLogo || null,
+            address: '',
+            phone: '',
+            email: '',
+        };
     });
     const [isLoading, setIsLoading] = useState(true);
 
@@ -24,10 +28,17 @@ export function SettingsProvider({ children }) {
             }
             const res = await axios.get(`${apiBase}/public/settings`);
             if (res.data?.success && res.data.data) {
+                const s = res.data.data;
+                if (s.logo) {
+                    localStorage.setItem('hireme_company_logo', s.logo);
+                }
+                if (s.companyName) {
+                    localStorage.setItem('hireme_company_name', s.companyName);
+                }
                 setSettings((prev) => ({
                     ...prev,
-                    ...res.data.data,
-                    companyName: res.data.data.companyName || 'HireMe',
+                    ...s,
+                    companyName: s.companyName || 'HireMe',
                 }));
             }
         } catch (err) {
@@ -54,12 +65,22 @@ export function SettingsProvider({ children }) {
         }
     }, [settings?.logo]);
 
-    // Immediately update context with new settings (called after successful save)
+    // Immediately update context & localStorage with new settings
     const updateSettingsInContext = useCallback((newSettings) => {
+        if (newSettings.logo !== undefined) {
+            if (newSettings.logo) {
+                localStorage.setItem('hireme_company_logo', newSettings.logo);
+            } else {
+                localStorage.removeItem('hireme_company_logo');
+            }
+        }
+        if (newSettings.companyName) {
+            localStorage.setItem('hireme_company_name', newSettings.companyName);
+        }
         setSettings((prev) => ({ ...prev, ...newSettings }));
     }, []);
 
-    // Re-fetch from server (called after save to confirm persisted data)
+    // Re-fetch from server
     const refreshSettings = useCallback(async () => {
         await fetchSettings();
     }, [fetchSettings]);

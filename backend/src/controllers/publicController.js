@@ -271,7 +271,7 @@ export const getPublicSettings = asyncHandler(async (req, res) => {
     res.status(200).json({
         success: true,
         data: {
-            companyName: settings.companyName || 'Rush Jewels',
+            companyName: settings.companyName || 'HireMe',
             address: settings.address || '',
             phone: settings.phone || '',
             email: settings.email || '',
