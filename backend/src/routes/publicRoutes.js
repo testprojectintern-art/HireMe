@@ -8,7 +8,8 @@ import {
     placeOnlineOrderPublic,
     getPublicOrderHistory,
     createAppointmentPublic,
-    checkCertificatePublic
+    checkCertificatePublic,
+    registerWorkerPublic
 } from '../controllers/publicController.js';
 
 const router = express.Router();
@@ -24,5 +25,6 @@ router.post('/orders', placeOnlineOrderPublic);
 router.get('/orders/history', getPublicOrderHistory);
 router.post('/appointments', createAppointmentPublic);
 router.get('/certificates/:certNumber', checkCertificatePublic);
+router.post('/register-worker', registerWorkerPublic);
 
 export default router;

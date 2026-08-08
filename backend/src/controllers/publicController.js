@@ -7,6 +7,7 @@ import Invoice from '../models/Invoice.js';
 import Customer from '../models/Customer.js';
 import SalesOrder from '../models/SalesOrder.js';
 import Appointment from '../models/Appointment.js';
+import Worker from '../models/Worker.js';
 
 /**
  * GET /api/public/warranty-check/:serialNumber
@@ -546,3 +547,82 @@ export const checkCertificatePublic = asyncHandler(async (req, res) => {
         });
     }
 });
+
+/**
+ * POST /api/public/register-worker
+ * Public Worker Registration Wizard Endpoint
+ */
+export const registerWorkerPublic = asyncHandler(async (req, res) => {
+    const {
+        fullName,
+        firstName,
+        lastName,
+        phone,
+        emergencyPhone,
+        address,
+        district,
+        primaryCategory,
+        skills,
+        experienceYears,
+        baseRate,
+        nicNumber,
+        nicFrontUrl,
+        nicBackUrl,
+        certificates
+    } = req.body;
+
+    if (!phone || (!fullName && !firstName)) {
+        res.status(400);
+        throw new Error('Full name and phone number are required.');
+    }
+
+    const existingWorker = await Worker.findOne({ phone: phone.trim() });
+    if (existingWorker) {
+        return res.status(200).json({
+            success: true,
+            alreadyRegistered: true,
+            message: 'A registration request with this phone number already exists.',
+            data: existingWorker
+        });
+    }
+
+    // Split name if single fullName string provided
+    let fName = firstName || '';
+    let lName = lastName || '';
+    if (!fName && fullName) {
+        const parts = fullName.trim().split(' ');
+        fName = parts[0];
+        lName = parts.slice(1).join(' ') || parts[0];
+    }
+
+    const worker = await Worker.create({
+        firstName: fName,
+        lastName: lName,
+        phone: phone.trim(),
+        address: `${address || ''}${district ? `, ${district}` : ''}`.trim(),
+        nic: nicNumber,
+        primaryCategory: primaryCategory || 'Other',
+        skills: Array.isArray(skills) ? skills : (skills ? skills.split(',').map(s => s.trim()) : [primaryCategory || 'General']),
+        referencePhones: emergencyPhone ? [emergencyPhone] : [],
+        verificationStatus: 'pending',
+        isVerified: false,
+        nicFrontUrl,
+        nicBackUrl,
+        certificates: Array.isArray(certificates) ? certificates : []
+    });
+
+    if (req.io) {
+        req.io.to('admin_room').emit('new_verification_request', {
+            workerId: worker._id,
+            workerName: `${worker.firstName} ${worker.lastName}`,
+            timestamp: new Date().toISOString()
+        });
+    }
+
+    res.status(201).json({
+        success: true,
+        message: 'Your profile is under review by HireMe Admin Team. You will receive an SMS once approved.',
+        data: worker
+    });
+});
+

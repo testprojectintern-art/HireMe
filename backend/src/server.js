@@ -1,3 +1,4 @@
+import http from 'http';
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
@@ -5,6 +6,8 @@ import morgan from 'morgan';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import compression from 'compression';
+import { Server as SocketIO } from 'socket.io';
+import { initSocketManager } from './utils/socketManager.js';
 
 import authRoutes from './routes/authRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
@@ -48,6 +51,11 @@ import warrantyClaimRoutes from './routes/warrantyClaimRoutes.js';
 import publicRoutes from './routes/publicRoutes.js';
 import ownerRoutes from './routes/ownerRoutes.js';
 import serialNumberRoutes from './routes/serialNumberRoutes.js';
+import uploadRoutes from './routes/uploadRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
+import workerAdminRoutes from './routes/workerAdminRoutes.js';
+import jobAdminRoutes from './routes/jobAdminRoutes.js';
+import disputeAdminRoutes from './routes/disputeAdminRoutes.js';
 import { initSmsScheduler } from './utils/smsScheduler.js';
 
 import { seedDefaults } from './utils/seedDefaults.js';
@@ -65,6 +73,20 @@ connectDB().then(() => {
 });
 
 const app = express();
+const server = http.createServer(app);
+
+// Socket.io setup
+const io = new SocketIO(server, {
+    cors: {
+        origin: process.env.FRONTEND_URL?.split(',') || '*',
+        methods: ['GET', 'POST'],
+        credentials: true,
+    },
+});
+initSocketManager(io);
+
+// Inject io into every request so controllers can emit events
+app.use((req, _res, next) => { req.io = io; next(); });
 
 // Security & parsing middleware
 app.use(helmet());
@@ -132,6 +154,13 @@ app.use('/api/serial-numbers', serialNumberRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/public', publicRoutes);
 app.use('/api/owner', ownerRoutes);
+app.use('/api/upload', uploadRoutes);
+
+// ── HireMe Admin Routes ───────────────────────────────────────────────────────
+app.use('/api/admin',           adminRoutes);
+app.use('/api/admin/workers',   workerAdminRoutes);
+app.use('/api/admin/jobs',      jobAdminRoutes);
+app.use('/api/admin/disputes',  disputeAdminRoutes);
 
 
 // Health check endpoint
@@ -152,6 +181,7 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`✓ Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+    console.log(`✓ Socket.io listening on port ${PORT}`);
 });

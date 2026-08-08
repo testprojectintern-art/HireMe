@@ -3,6 +3,7 @@ import { Settings, Save, Database, Compass, Search, RefreshCw, AlertTriangle, Ch
 import { toast } from 'react-hot-toast';
 import { useCompanySettings, useUpdateCompanySettings, useDbStats } from '../features/settings/useSettings';
 import Button from '../components/ui/Button';
+import { useSettings } from '../context/SettingsContext';
 
 export default function SettingsPage() {
     const [activeTab, setActiveTab] = useState('company'); // 'company', 'db', 'roadmap'
@@ -44,30 +45,60 @@ export default function SettingsPage() {
 
     const handleLogoChange = (e) => {
         const file = e.target.files[0];
-        if (file) {
-            if (file.size > 1024 * 1024) { // 1MB limit
-                toast.error('Image size should be less than 1MB');
+        if (!file) return;
+
+        if (file.size > 2 * 1024 * 1024) { // 2MB raw file limit
+            toast.error('Image too large. Please use an image under 2MB.');
+            return;
+        }
+
+        // Compress & resize image to max 300x300px before storing as base64
+        const img = new Image();
+        const objectUrl = URL.createObjectURL(file);
+        img.onload = () => {
+            const MAX = 300;
+            const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+            const canvas = document.createElement('canvas');
+            canvas.width  = Math.round(img.width  * scale);
+            canvas.height = Math.round(img.height * scale);
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            const compressed = canvas.toDataURL('image/webp', 0.85);
+            URL.revokeObjectURL(objectUrl);
+            // Estimate compressed size (~75% of base64 length)
+            const estimatedKB = Math.round((compressed.length * 0.75) / 1024);
+            if (estimatedKB > 500) {
+                toast.error(`Compressed image is ${estimatedKB}KB — please use a smaller image.`);
                 return;
             }
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setFormData(prev => ({ ...prev, logo: reader.result }));
-            };
-            reader.readAsDataURL(file);
-        }
+            setFormData(prev => ({ ...prev, logo: compressed }));
+            toast.success(`Logo ready (${estimatedKB}KB compressed). Click Save to apply.`);
+        };
+        img.onerror = () => {
+            URL.revokeObjectURL(objectUrl);
+            toast.error('Could not read image file.');
+        };
+        img.src = objectUrl;
     };
 
     const handleRemoveLogo = () => {
         setFormData(prev => ({ ...prev, logo: '' }));
     };
 
+    const { updateSettingsInContext, refreshSettings } = useSettings() || {};
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await updateSettings.mutateAsync(formData);
-            toast.success('Settings updated successfully');
+            const savedData = await updateSettings.mutateAsync(formData);
+            // Immediately update context with the saved data
+            updateSettingsInContext?.(formData);
+            // Await server refresh to confirm logo is persisted
+            await refreshSettings?.();
+            toast.success('Settings saved! Logo and company info updated across the platform.');
         } catch (err) {
-            toast.error(err.response?.data?.message || 'Failed to update settings');
+            const msg = err.response?.data?.message || err.message || 'Failed to save settings';
+            toast.error(msg);
         }
     };
 
@@ -159,35 +190,48 @@ export default function SettingsPage() {
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="md:col-span-2">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Company Logo</label>
-                                <div className="flex items-center gap-6">
-                                    <div className="border border-gray-300 rounded-lg p-2 w-32 h-32 flex items-center justify-center bg-gray-50 overflow-hidden relative group">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Company Logo</label>
+                                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
+                                    {/* Logo Preview */}
+                                    <div className="flex-shrink-0 border-2 border-dashed border-gray-200 dark:border-slate-700 rounded-2xl p-2 w-28 h-28 flex items-center justify-center bg-gray-50 dark:bg-slate-800 overflow-hidden relative group hover:border-hireme-400 transition-colors">
                                         {formData.logo ? (
-                                            <img src={formData.logo} alt="Company Logo" className="max-w-full max-h-full object-contain" />
+                                            <img src={formData.logo} alt="Company Logo" className="max-w-full max-h-full object-contain rounded-xl" />
                                         ) : (
-                                            <div className="text-center text-xs text-gray-400">No logo uploaded</div>
+                                            <div className="text-center">
+                                                <div className="text-3xl mb-1">🖼️</div>
+                                                <p className="text-[10px] text-gray-400 dark:text-slate-500 font-medium">No logo</p>
+                                            </div>
                                         )}
                                     </div>
-                                    <div className="space-y-2">
-                                        <div className="flex gap-2">
-                                            <label className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer shadow-sm">
-                                                Choose Logo
+                                    {/* Upload Controls */}
+                                    <div className="flex-1 w-full space-y-3">
+                                        <div className="flex flex-wrap gap-2">
+                                            <label className="inline-flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-300 hover:border-hireme-400 dark:hover:border-hireme-600 hover:text-hireme-700 dark:hover:text-hireme-400 cursor-pointer shadow-sm transition-all active:scale-[0.97]">
+                                                📤 Choose Logo
                                                 <input type="file" accept="image/*" className="hidden" onChange={handleLogoChange} />
                                             </label>
                                             {formData.logo && (
                                                 <button
                                                     type="button"
                                                     onClick={handleRemoveLogo}
-                                                    className="px-4 py-2 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm font-medium hover:bg-red-100"
+                                                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 rounded-xl text-sm font-semibold hover:bg-red-100 dark:hover:bg-red-950/50 transition-all active:scale-[0.97]"
                                                 >
-                                                    Remove
+                                                    🗑️ Remove
                                                 </button>
                                             )}
                                         </div>
-                                        <p className="text-xs text-gray-500">Square or rectangular logo under 1MB is recommended. Will print on POS receipts.</p>
+                                        <div className="space-y-1">
+                                            <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">
+                                                PNG, JPG, SVG or WebP • Under 2MB • Auto-compressed to 300×300px
+                                            </p>
+                                            <p className="text-xs text-gray-400 dark:text-slate-500">
+                                                Logo will appear in the sidebar, header, and printed receipts.
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Company Name *</label>
                                 <input

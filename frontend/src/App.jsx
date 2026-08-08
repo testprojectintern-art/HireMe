@@ -126,12 +126,25 @@ import ProtectedRoute from './components/ProtectedRoute';
 import AppLayout from './components/layout/AppLayout';
 import ReceiptPrintPage from './pages/ReceiptPrintPage';
 
+// ── HireMe Admin Dashboard ───────────────────────────────────────────────────
+import AdminLayout from './admin/pages/AdminLayout';
+import AdminDashboard from './admin/pages/AdminDashboard';
+import AdminLiveMap from './admin/pages/AdminLiveMap';
+import AdminVerifications from './admin/pages/AdminVerifications';
+import AdminJobManagement from './admin/pages/AdminJobManagement';
+import AdminDisputes from './admin/pages/AdminDisputes';
+import AdminAnalytics from './admin/pages/AdminAnalytics';
+import AdminCustomers from './admin/pages/AdminCustomers';
+
+import WorkerRegisterWizard from './pages/WorkerRegisterWizard';
+
 function App() {
   return (
     <Routes>
       {/* Customer Facing Luxury Portal */}
       <Route element={<PublicLayout />}>
         <Route path="/" element={<PublicHomePage />} />
+        <Route path="/register-worker" element={<WorkerRegisterWizard />} />
         <Route path="/catalog" element={<PublicCatalogPage />} />
         <Route path="/cart" element={<PublicCartPage />} />
         <Route path="/checkout" element={<PublicCheckoutPage />} />
@@ -297,6 +310,24 @@ function App() {
       </Route>
 
       <Route path="*" element={<NotFoundPage />} />
+
+      {/* ── HireMe Admin Dashboard ─────────────────────────────────── */}
+      <Route
+        element={
+          <ProtectedRoute allowedRoles={['admin']}>
+            <AdminLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="/admin"                    element={<AdminDashboard />}    />
+        <Route path="/admin/live-map"           element={<AdminLiveMap />}      />
+        <Route path="/admin/verifications"      element={<AdminVerifications />}/>
+        <Route path="/admin/jobs"               element={<AdminJobManagement />}/>
+        <Route path="/admin/disputes"           element={<AdminDisputes />}     />
+        <Route path="/admin/analytics"          element={<AdminAnalytics />}    />
+        <Route path="/admin/customers"          element={<AdminCustomers />}    />
+        <Route path="/admin/settings"           element={<SettingsPage />}      />
+      </Route>
     </Routes>
   );
 }

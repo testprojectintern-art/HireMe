@@ -7,7 +7,7 @@ export default function IntroOverlay({ onComplete }) {
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
     const canvasRef = useRef(null);
 
-    const brandLetters = "RUSH _ JEWELS".split("");
+    const brandLetters = "HIRE  ME".split("");
 
     useEffect(() => {
         document.body.style.overflow = 'hidden';
@@ -42,7 +42,7 @@ export default function IntroOverlay({ onComplete }) {
                     z3d: Math.random() * 700 + 100,
                     speed: Math.random() * 0.012 + 0.005,
                     size: Math.random() * 1.5 + 1.2,
-                    color: Math.random() > 0.4 ? '#d4a96a' : '#f59e0b', // Luxury amber & gold
+                    color: Math.random() > 0.4 ? '#55b32b' : '#9de068', // HireMe green spectrum
                     alpha: Math.random() * 0.6 + 0.4
                 });
             }
@@ -56,7 +56,7 @@ export default function IntroOverlay({ onComplete }) {
             window.addEventListener('mousemove', trackMouse);
 
             const render = () => {
-                ctx.fillStyle = '#050507';
+                ctx.fillStyle = '#040a06';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
                 // Central glow highlight
@@ -64,8 +64,8 @@ export default function IntroOverlay({ onComplete }) {
                     canvas.width / 2, canvas.height / 2, 0,
                     canvas.width / 2, canvas.height / 2, 350
                 );
-                centerGlow.addColorStop(0, 'rgba(212, 169, 106, 0.08)');
-                centerGlow.addColorStop(0.6, 'rgba(245, 158, 11, 0.02)');
+                centerGlow.addColorStop(0, 'rgba(85, 179, 43, 0.10)');
+                centerGlow.addColorStop(0.6, 'rgba(85, 179, 43, 0.02)');
                 centerGlow.addColorStop(1, 'transparent');
                 ctx.fillStyle = centerGlow;
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -156,8 +156,8 @@ export default function IntroOverlay({ onComplete }) {
                     }}
                     style={{
                         position: 'fixed', inset: 0, zIndex: 999999,
-                        // Interactive dark luxury radial gradient
-                        background: `radial-gradient(circle at ${50 + mousePos.x * 2}% ${50 + mousePos.y * 2}%, rgba(212, 169, 106, 0.08) 0%, #060608 100%)`,
+                        // Interactive dark luxury radial gradient — HireMe green
+                        background: `radial-gradient(circle at ${50 + mousePos.x * 2}% ${50 + mousePos.y * 2}%, rgba(85, 179, 43, 0.10) 0%, #040a06 100%)`,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         overflow: 'hidden'
                     }}
@@ -195,17 +195,17 @@ export default function IntroOverlay({ onComplete }) {
                             style={{
                                 position: 'fixed', top: '28px', right: '28px', zIndex: 1000000,
                                 padding: '10px 22px', borderRadius: '999px',
-                                border: '1px solid rgba(212, 169, 106, 0.35)',
-                                background: 'rgba(5, 5, 7, 0.85)',
+                                border: '1px solid rgba(85, 179, 43, 0.4)',
+                                background: 'rgba(4, 10, 6, 0.88)',
                                 backdropFilter: 'blur(16px)',
-                                color: '#d4a96a', fontSize: '10px', fontWeight: '700',
+                                color: '#55b32b', fontSize: '10px', fontWeight: '700',
                                 letterSpacing: '0.15em', textTransform: 'uppercase', cursor: 'pointer',
-                                boxShadow: '0 4px 15px rgba(212, 169, 106, 0.1)'
+                                boxShadow: '0 4px 15px rgba(85, 179, 43, 0.12)'
                             }}
                             whileHover={{ 
-                                borderColor: '#d4a96a',
+                                borderColor: '#55b32b',
                                 color: '#ffffff',
-                                backgroundColor: '#d4a96a'
+                                backgroundColor: '#55b32b'
                             }}
                             whileTap={{ scale: 0.95 }}
                         >
@@ -236,13 +236,13 @@ export default function IntroOverlay({ onComplete }) {
                                 </defs>
 
                                 {/* Soft glowing halo behind logo to make it pop */}
-                                <circle cx="50" cy="50" r="32" fill="rgba(212, 169, 106, 0.08)" filter="url(#gold-glow)" />
+                                <circle cx="50" cy="50" r="32" fill="rgba(85, 179, 43, 0.10)" filter="url(#gold-glow)" />
 
                                 {/* 1. Left interlocking leaf curve loop */}
                                 <motion.path
                                     d="M 38,42 C 25,50 25,70 50,85 C 58,74 62,60 56,46"
                                     fill="none"
-                                    stroke="#d4a96a"
+                                    stroke="#55b32b"
                                     strokeWidth="2.5"
                                     initial={{ pathLength: 0 }}
                                     animate={{ pathLength: 1 }}
@@ -254,7 +254,7 @@ export default function IntroOverlay({ onComplete }) {
                                 <motion.path
                                     d="M 63,58 C 75,50 75,30 50,15 C 42,26 38,40 44,54"
                                     fill="none"
-                                    stroke="#d4a96a"
+                                    stroke="#55b32b"
                                     strokeWidth="2.5"
                                     initial={{ pathLength: 0 }}
                                     animate={{ pathLength: 1 }}
@@ -262,26 +262,26 @@ export default function IntroOverlay({ onComplete }) {
                                     style={{ filter: 'url(#gold-glow)', strokeLinecap: 'round' }}
                                 />
 
-                                {/* 3. Center Monogram 'N' */}
+                                {/* 3. Center Monogram 'H' for HireMe */}
                                 <motion.path 
-                                    d="M 45,43 L 45,61"
-                                    fill="none" stroke="#eab308" strokeWidth="2.5"
+                                    d="M 44,43 L 44,61"
+                                    fill="none" stroke="#9de068" strokeWidth="2.5"
                                     initial={{ pathLength: 0 }}
                                     animate={{ pathLength: 1 }}
                                     transition={{ duration: 0.6, delay: 1.8 }}
                                     style={{ filter: 'url(#gold-glow)' }}
                                 />
                                 <motion.path 
-                                    d="M 45,43 L 55,61"
-                                    fill="none" stroke="#eab308" strokeWidth="2.5"
+                                    d="M 44,52 L 56,52"
+                                    fill="none" stroke="#9de068" strokeWidth="2.5"
                                     initial={{ pathLength: 0 }}
                                     animate={{ pathLength: 1 }}
                                     transition={{ duration: 0.8, delay: 2.2 }}
                                     style={{ filter: 'url(#gold-glow)' }}
                                 />
                                 <motion.path 
-                                    d="M 55,43 L 55,61"
-                                    fill="none" stroke="#eab308" strokeWidth="2.5"
+                                    d="M 56,43 L 56,61"
+                                    fill="none" stroke="#9de068" strokeWidth="2.5"
                                     initial={{ pathLength: 0 }}
                                     animate={{ pathLength: 1 }}
                                     transition={{ duration: 0.6, delay: 2.7 }}
@@ -320,13 +320,13 @@ export default function IntroOverlay({ onComplete }) {
                                             ease: [0.16, 1, 0.3, 1] 
                                         }}
                                         style={{
-                                            fontFamily: "var(--sans)",
+                                            fontFamily: "'Inter', system-ui, sans-serif",
                                             fontSize: 'clamp(22px, 5vw, 32px)',
-                                            fontWeight: '400',
-                                            letterSpacing: '0.24em',
-                                            color: '#d4a96a', 
+                                            fontWeight: '700',
+                                            letterSpacing: '0.22em',
+                                            color: '#55b32b', 
                                             display: 'inline-block',
-                                            textShadow: '0 2px 10px rgba(212,169,106,0.2)'
+                                            textShadow: '0 2px 14px rgba(85,179,43,0.35)'
                                         }}
                                     >
                                         {char === " " ? "\u00A0" : char}
@@ -337,11 +337,11 @@ export default function IntroOverlay({ onComplete }) {
                             {/* Underline separator */}
                             <motion.div 
                                 initial={{ width: 0, opacity: 0 }}
-                                animate={{ width: '220px', opacity: 0.8 }}
+                                animate={{ width: '220px', opacity: 0.9 }}
                                 transition={{ duration: 1.2, delay: 2.4, ease: 'easeInOut' }}
                                 style={{
-                                    height: '1px',
-                                    background: 'linear-gradient(90deg, transparent, #d4a96a, #c9956d, transparent)'
+                                    height: '1.5px',
+                                    background: 'linear-gradient(90deg, transparent, #55b32b, #9de068, transparent)'
                                 }}
                             />
 

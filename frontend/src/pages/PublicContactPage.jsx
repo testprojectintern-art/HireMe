@@ -1,147 +1,201 @@
 import { useState } from 'react';
-import { Mail, Phone, MapPin, Send, MessageSquare, Clock } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Phone, Mail, MapPin, Clock, Send, MessageSquare, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function PublicContactPage() {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [message, setMessage] = useState('');
-    const [submitting, setSubmitting] = useState(false);
+    const [form, setForm] = useState({
+        name: '',
+        email: '',
+        phone: '',
+        serviceInquiry: 'Plumbing',
+        message: ''
+    });
+    const [submitted, setSubmitted] = useState(false);
 
-    const handleSendMessage = (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        if (!name || !email || !message) {
-            toast.error('Please fill in all form fields');
+        if (!form.name || !form.phone || !form.message) {
+            toast.error('Please fill in your name, phone number, and message.');
             return;
         }
-        setSubmitting(true);
-        setTimeout(() => {
-            toast.success('Your message has been sent! Our client relations manager will contact you shortly.');
-            setName('');
-            setEmail('');
-            setMessage('');
-            setSubmitting(false);
-        }, 1200);
+        setSubmitted(true);
+        toast.success('Your message has been sent to HireMe Customer Care!');
     };
 
     return (
-        <div className="max-w-7xl mx-auto px-6 py-12 space-y-12">
-            {/* Title */}
+        <div className="max-w-5xl mx-auto py-10 px-4 space-y-10 animate-in fade-in duration-300">
+            {/* Page Title */}
             <div className="text-center space-y-2">
-                <h1 className="text-3xl font-bold tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
-                    Get in Touch
-                </h1>
-                <div className="w-16 h-[2px] bg-amber-500 mx-auto" />
-                <p className="text-slate-400 text-xs font-light">
-                    Have questions about customized jewelry or GIA stones? Contact our concierge desk.
+                <span className="px-3.5 py-1.5 bg-[#55b32b]/10 border border-[#55b32b]/25 text-[#46a021] text-xs font-extrabold rounded-full uppercase tracking-wider">
+                    Customer & Worker Support
+                </span>
+                <h1 className="text-3xl sm:text-4xl font-black text-slate-900">Contact HireMe Sri Lanka</h1>
+                <p className="text-slate-600 text-sm max-w-xl mx-auto font-medium">
+                    Have a question about worker dispatch, account verification, or platform support? Get in touch with our 24/7 team.
                 </p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                {/* Contact Info Card */}
-                <div className="p-6 sm:p-8 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl shadow-sm space-y-8">
-                    <h2 className="text-base font-bold tracking-tight text-slate-900 dark:text-white uppercase tracking-wider flex items-center space-x-2" style={{ fontFamily: "'Playfair Display', serif" }}>
-                        <MessageSquare size={16} className="text-amber-500" />
-                        <span>Showrooms & Concierge Desk</span>
-                    </h2>
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                {/* Contact Information & Hubs */}
+                <div className="lg:col-span-2 space-y-6">
+                    <div className="bg-white border border-slate-200/90 rounded-3xl p-6 space-y-5 shadow-xl shadow-slate-200/50">
+                        <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+                            <MessageSquare className="text-[#55b32b]" size={20} />
+                            Support Contact Info
+                        </h3>
 
-                    <div className="space-y-6 text-xs leading-relaxed font-light">
-                        <div className="flex items-start space-x-3.5">
-                            <MapPin className="text-amber-500 shrink-0 mt-0.5" size={16} />
-                            <div>
-                                <h3 className="font-bold text-slate-800 dark:text-slate-205">Colombo Flagship Showroom</h3>
-                                <p className="text-slate-450 dark:text-slate-400 mt-0.5">42, Galle Road, Colombo 03, Sri Lanka</p>
+                        <div className="space-y-4 text-sm">
+                            <div className="flex items-start gap-3">
+                                <div className="p-2.5 bg-emerald-50 text-[#46a021] border border-emerald-200 rounded-xl shrink-0 mt-0.5">
+                                    <Phone size={18} />
+                                </div>
+                                <div>
+                                    <p className="text-xs text-slate-400 uppercase font-bold">24/7 Hotline</p>
+                                    <p className="text-slate-900 font-extrabold">+94 11 234 5678</p>
+                                    <p className="text-xs text-slate-500 font-medium">+94 77 123 4567 (WhatsApp Support)</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-start gap-3">
+                                <div className="p-2.5 bg-blue-50 text-blue-600 border border-blue-200 rounded-xl shrink-0 mt-0.5">
+                                    <Mail size={18} />
+                                </div>
+                                <div>
+                                    <p className="text-xs text-slate-400 uppercase font-bold">Email Inquiries</p>
+                                    <p className="text-slate-900 font-extrabold">support@hireme.lk</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-start gap-3">
+                                <div className="p-2.5 bg-amber-50 text-amber-600 border border-amber-200 rounded-xl shrink-0 mt-0.5">
+                                    <Clock size={18} />
+                                </div>
+                                <div>
+                                    <p className="text-xs text-slate-400 uppercase font-bold">Support Hours</p>
+                                    <p className="text-slate-800 font-bold">Mon - Sun: 24 Hours Emergency Service</p>
+                                </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div className="flex items-start space-x-3.5">
-                            <MapPin className="text-amber-500 shrink-0 mt-0.5" size={16} />
-                            <div>
-                                <h3 className="font-bold text-slate-800 dark:text-slate-205">Kandy Elite Lounge</h3>
-                                <p className="text-slate-450 dark:text-slate-400 mt-0.5">12, Temple Road, Kandy, Sri Lanka</p>
+                    {/* Regional Hubs */}
+                    <div className="bg-white border border-slate-200/90 rounded-3xl p-6 space-y-4 shadow-xl shadow-slate-200/50">
+                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">Regional Hubs</h4>
+                        <div className="space-y-3 text-xs">
+                            <div className="flex items-start gap-2.5">
+                                <MapPin size={16} className="text-[#55b32b] shrink-0 mt-0.5" />
+                                <div>
+                                    <p className="font-extrabold text-slate-900">Colombo Central Hub</p>
+                                    <p className="text-slate-500 font-medium">No. 42, Galle Road, Colombo 03, Sri Lanka</p>
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="flex items-center space-x-3.5 border-t border-slate-100 dark:border-slate-850 pt-5">
-                            <Phone className="text-amber-500 shrink-0" size={16} />
-                            <div>
-                                <h3 className="font-bold text-slate-808 dark:text-slate-205">Phone Lines</h3>
-                                <p className="text-slate-450 dark:text-slate-400 mt-0.5">+94 11 234 5678 / +94 77 123 4567</p>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center space-x-3.5">
-                            <Mail className="text-amber-500 shrink-0" size={16} />
-                            <div>
-                                <h3 className="font-bold text-slate-800 dark:text-slate-205">Emails</h3>
-                                <p className="text-slate-455 dark:text-slate-400 mt-0.5">concierge@rushjewels.lk / inquiries@rushjewels.lk</p>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center space-x-3.5 border-t border-slate-100 dark:border-slate-850 pt-5">
-                            <Clock className="text-amber-500 shrink-0" size={16} />
-                            <div>
-                                <h3 className="font-bold text-slate-800 dark:text-slate-205">Showroom Timing</h3>
-                                <p className="text-slate-455 dark:text-slate-400 mt-0.5">Monday - Friday: 9:30 AM – 7:00 PM | Saturday: 10:00 AM – 6:00 PM</p>
+                            <div className="flex items-start gap-2.5">
+                                <MapPin size={16} className="text-emerald-600 shrink-0 mt-0.5" />
+                                <div>
+                                    <p className="font-extrabold text-slate-900">Kandy Regional Hub</p>
+                                    <p className="text-slate-500 font-medium">No. 12, Peradeniya Road, Kandy, Sri Lanka</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Form Card */}
-                <div className="p-6 sm:p-8 bg-white dark:bg-slate-900 border border-slate-205 dark:border-slate-800 rounded-3xl shadow-sm">
-                    <form onSubmit={handleSendMessage} className="space-y-4">
-                        <h2 className="text-base font-bold tracking-tight text-slate-900 dark:text-white uppercase tracking-wider flex items-center space-x-2" style={{ fontFamily: "'Playfair Display', serif" }}>
-                            <Send size={15} className="text-amber-500" />
-                            <span>Send Message</span>
-                        </h2>
+                {/* Form */}
+                <div className="lg:col-span-3">
+                    <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 space-y-5 shadow-xl shadow-slate-200/50">
+                        <h3 className="text-lg font-black text-slate-900">Send Us a Message</h3>
 
-                        <div className="space-y-1">
-                            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-400">Full Name *</label>
-                            <input
-                                type="text"
-                                required
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                placeholder="Your Name"
-                                className="w-full px-3 py-2 text-xs border border-slate-200 dark:border-slate-850 bg-slate-50/50 dark:bg-slate-950/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-                            />
-                        </div>
+                        {submitted ? (
+                            <div className="p-8 text-center space-y-4 bg-emerald-50 border border-emerald-200 rounded-2xl">
+                                <CheckCircle className="text-[#55b32b] mx-auto" size={48} />
+                                <h4 className="text-xl font-extrabold text-slate-900">Thank You!</h4>
+                                <p className="text-xs text-slate-600 font-medium max-w-md mx-auto">
+                                    Your message has been received by our support team. We will call or SMS you back within 30 minutes.
+                                </p>
+                                <button
+                                    onClick={() => setSubmitted(false)}
+                                    className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl"
+                                >
+                                    Send Another Message
+                                </button>
+                            </div>
+                        ) : (
+                            <form onSubmit={handleSubmit} className="space-y-4">
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-700 mb-1">Your Name *</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={form.name}
+                                        onChange={(e) => setForm({ ...form, name: e.target.value })}
+                                        placeholder="e.g. Kasun Silva"
+                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#55b32b] font-medium"
+                                    />
+                                </div>
 
-                        <div className="space-y-1">
-                            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-400">Email Address *</label>
-                            <input
-                                type="email"
-                                required
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder="name@example.com"
-                                className="w-full px-3 py-2 text-xs border border-slate-200 dark:border-slate-850 bg-slate-50/50 dark:bg-slate-950/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-                            />
-                        </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-700 mb-1">Phone Number *</label>
+                                        <input
+                                            type="tel"
+                                            required
+                                            value={form.phone}
+                                            onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                                            placeholder="0771234567"
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#55b32b] font-medium"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-700 mb-1">Email Address</label>
+                                        <input
+                                            type="email"
+                                            value={form.email}
+                                            onChange={(e) => setForm({ ...form, email: e.target.value })}
+                                            placeholder="kasun@gmail.com"
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#55b32b] font-medium"
+                                        />
+                                    </div>
+                                </div>
 
-                        <div className="space-y-1">
-                            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-400">Message *</label>
-                            <textarea
-                                required
-                                rows={4}
-                                value={message}
-                                onChange={(e) => setMessage(e.target.value)}
-                                placeholder="Type your message about jewelry designs, custom orders, or quotes..."
-                                className="w-full px-3 py-2 text-xs border border-slate-200 dark:border-slate-850 bg-slate-50/50 dark:bg-slate-950/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-                            />
-                        </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-700 mb-1">Service Category Inquiry</label>
+                                    <select
+                                        value={form.serviceInquiry}
+                                        onChange={(e) => setForm({ ...form, serviceInquiry: e.target.value })}
+                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-[#55b32b] font-medium cursor-pointer"
+                                    >
+                                        <option value="Plumbing">Plumbing</option>
+                                        <option value="Electrical">Electrical</option>
+                                        <option value="Carpentry">Carpentry</option>
+                                        <option value="Coconut Plucking">Coconut Plucking</option>
+                                        <option value="Masonry">Masonry</option>
+                                        <option value="Worker Registration Inquiry">Worker Registration Inquiry</option>
+                                        <option value="Other Support">Other Support</option>
+                                    </select>
+                                </div>
 
-                        <button
-                            type="submit"
-                            disabled={submitting}
-                            className="w-full py-3.5 rounded-xl bg-slate-900 dark:bg-amber-500 hover:bg-slate-800 dark:hover:bg-amber-600 text-white font-bold text-xs uppercase tracking-widest transition flex items-center justify-center space-x-2 active:scale-95 disabled:opacity-50"
-                        >
-                            <Send size={13} />
-                            <span>{submitting ? 'Sending Message...' : 'Send Message'}</span>
-                        </button>
-                    </form>
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-700 mb-1">Message *</label>
+                                    <textarea
+                                        rows={4}
+                                        required
+                                        value={form.message}
+                                        onChange={(e) => setForm({ ...form, message: e.target.value })}
+                                        placeholder="Describe your inquiry or requested service in detail…"
+                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#55b32b] resize-none font-medium"
+                                    />
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    className="w-full py-3.5 bg-[#55b32b] hover:bg-[#46a021] text-white font-extrabold text-sm rounded-xl transition shadow-lg shadow-[#55b32b]/30 flex items-center justify-center gap-2"
+                                >
+                                    <Send size={16} /> Send Message
+                                </button>
+                            </form>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

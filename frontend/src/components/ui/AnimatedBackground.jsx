@@ -3,11 +3,41 @@ import React from 'react';
 export default function AnimatedBackground() {
     return (
         <div className="absolute inset-0 pointer-events-none overflow-hidden select-none z-0" aria-hidden="true">
-            {/* Layer 1: Base Ambient Gradients */}
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(251,191,36,0.06),transparent_55%),radial-gradient(ellipse_at_bottom_left,rgba(168,85,247,0.04),transparent_55%)] dark:bg-[radial-gradient(ellipse_at_top_left,rgba(245,158,11,0.03),transparent_55%),radial-gradient(ellipse_at_bottom_left,rgba(147,51,234,0.03),transparent_55%)]" />
-            
-            {/* Layer 2: Overlay Ambient Gradients with GPU-accelerated slow breathing animation */}
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(99,102,241,0.06),transparent_55%),radial-gradient(ellipse_at_bottom_right,rgba(236,72,153,0.04),transparent_55%)] dark:bg-[radial-gradient(ellipse_at_top_right,rgba(79,70,229,0.03),transparent_50%),radial-gradient(ellipse_at_bottom_right,rgba(124,58,237,0.02),transparent_50%)] animate-pulse-gradient" />
+            {/* HireMe Green Ambient Orb — Top Left */}
+            <div
+                className="absolute -top-32 -left-32 w-[560px] h-[560px] rounded-full animate-orb-drift"
+                style={{
+                    background: 'radial-gradient(circle, rgba(85,179,43,0.10) 0%, rgba(85,179,43,0.03) 45%, transparent 70%)',
+                    animationDelay: '0s',
+                }}
+            />
+
+            {/* Teal / Emerald Orb — Bottom Right */}
+            <div
+                className="absolute -bottom-40 -right-40 w-[640px] h-[640px] rounded-full animate-orb-drift"
+                style={{
+                    background: 'radial-gradient(circle, rgba(20,184,166,0.08) 0%, rgba(20,184,166,0.02) 45%, transparent 70%)',
+                    animationDelay: '-7s',
+                }}
+            />
+
+            {/* Indigo Accent Orb — Top Right */}
+            <div
+                className="absolute -top-16 right-1/4 w-[420px] h-[420px] rounded-full animate-orb-drift"
+                style={{
+                    background: 'radial-gradient(circle, rgba(99,102,241,0.06) 0%, transparent 65%)',
+                    animationDelay: '-12s',
+                    animationDuration: '22s',
+                }}
+            />
+
+            {/* Soft overlay breathing layer */}
+            <div
+                className="absolute inset-0 animate-pulse-gradient"
+                style={{
+                    background: 'radial-gradient(ellipse at 70% 20%, rgba(85,179,43,0.04) 0%, transparent 55%), radial-gradient(ellipse at 20% 80%, rgba(20,184,166,0.04) 0%, transparent 55%)',
+                }}
+            />
         </div>
     );
 }

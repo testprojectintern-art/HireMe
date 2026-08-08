@@ -70,3 +70,6 @@ export const authorize = (...roles) => {
         next();
     };
 };
+
+// Shorthand: admin-only guard
+export const adminOnly = authorize('admin');
